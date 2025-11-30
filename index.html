@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeaFresh | Premium Seafood Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #0f4c75; 
+            --secondary: #3282b8; 
+            --accent: #bbe1fa; 
+            --alert: #ff6b6b;
+            --success: #28a745; /* Warna sukses untuk notifikasi */
+            --bg: #f8f9fa;
+            --text: #333;
+            --white: #ffffff;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding-top: 80px;
+        }
+
+        /* --- TOAST NOTIFICATION (EFEK INTERAKTIF) --- */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--primary);
+            color: #fff;
+            text-align: center;
+            border-radius: 50px;
+            padding: 16px;
+            position: fixed;
+            z-index: 3000;
+            right: 30px;
+            top: 100px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.5s, top 0.5s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            top: 110px; /* Sedikit animasi turun */
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            background: var(--white);
+            padding: 1rem 5%;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--secondary); }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--primary);
+            transition: transform 0.2s;
+        }
+        
+        .cart-icon:hover { transform: scale(1.1); }
+git add .
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- HERO & SECTIONS --- */
+        .hero {
+            background: linear-gradient(rgba(15, 76, 117, 0.8), rgba(15, 76, 117, 0.6)), url('https://images.unsplash.com/photo-1615141982880-1313d418206f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .btn-cta {
+            background: var(--alert);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+        .btn-cta:hover { transform: scale(1.05); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .section-title {
+            text-align: center; margin-bottom: 3rem; color: var(--primary); position: relative;
+        }
+        .section-title::after {
+            content: ''; display: block; width: 60px; height: 3px; background: var(--alert); margin: 10px auto;
+        }
+
+        /* --- PRODUCT GRID --- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .product-img { width: 100%; height: 200px; object-fit: cover; }
+        .product-info { padding: 1.5rem; }
+        .product-name { font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem; }
+        .product-price { color: var(--alert); font-weight: 700; font-size: 1.1rem; margin-bottom: 1rem; }
+
+        .btn-add {
+            width: 100%; padding: 10px; border: none; background: var(--secondary);
+            color: white; border-radius: 8px; cursor: pointer; transition: 0.3s;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-add:hover { background: var(--primary); }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px); justify-content: center; align-items: flex-start;
+            padding-top: 50px; overflow-y: auto;
+        }
+
+        .modal-content {
+            background: var(--white); padding: 2rem; border-radius: 15px;
+            width: 90%; max-width: 800px; position: relative; display: flex; gap: 2rem;
+            animation: slideUp 0.3s ease; margin-bottom: 50px;
+        }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #999; }
+        
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .detail-img { width: 50%; border-radius: 10px; object-fit: cover; }
+        .detail-info { width: 50%; display: flex; flex-direction: column; justify-content: center; }
+
+        /* --- CART MODAL & CHECKOUT FORM --- */
+        .cart-modal-content {
+            max-width: 500px; flex-direction: column; gap: 1rem;
+        }
+        
+        .cart-items {
+            overflow-y: auto; max-height: 250px; border-bottom: 1px solid #eee; margin-bottom: 10px;
+        }
+
+        .cart-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+        }
+        .cart-item:last-child { border-bottom: none; }
+
+        .cart-item img {
+            width: 50px; height: 50px; border-radius: 5px; object-fit: cover; margin-right: 10px;
+        }
+
+        .remove-btn { color: #ccc; cursor: pointer; border: none; background: none; transition: 0.2s; }
+        .remove-btn:hover { color: var(--alert); }
+
+        /* Checkout Form Styling */
+        .checkout-form { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        .form-group label { font-size: 0.9rem; font-weight: 600; color: var(--primary); display: block; margin-bottom: 5px; }
+        .form-input {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;
+            outline: none; transition: border 0.3s; font-size: 0.9rem;
+        }
+        .form-input:focus { border-color: var(--secondary); box-shadow: 0 0 5px rgba(50, 130, 184, 0.2); }
+        
+        .cart-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .btn-clear { background: none; border: none; color: var(--alert); cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
+        
+        .cart-total { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+
+        .btn-checkout {
+            background: var(--success); color: white; width: 100%; padding: 12px;
+            border: none; border-radius: 8px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; margin-top: 15px; display: flex; justify-content: center; gap: 10px;
+            align-items: center;
+        }
+        .btn-checkout:hover { background: #218838; }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .modal-content { flex-direction: column; }
+            .detail-img, .detail-info { width: 100%; }
+            .nav-links { display: none; } 
+            #toast { width: 90%; right: 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast"><i class="fas fa-check-circle"></i> Berhasil ditambahkan ke keranjang!</div>
+
+    <nav>
+        <a href="#" class="logo"><i class="fas fa-fish"></i> SeaFresh</a>
+        <div class="nav-links">
+            <a href="#home">Beranda</a>
+            <a href="#products">Produk</a>
+            <a href="#about">Tentang Kami</a>
+        </div>
+        <div class="cart-icon" onclick="toggleCart()">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge" id="cart-count">0</span>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <h1>Kesegaran Laut di Meja Anda</h1>
+        <p>Kualitas premium, langsung dari nelayan terbaik.</p>
+        <a href="#products" class="btn-cta">Belanja Sekarang</a>
+    </section>
+
+    <section id="products" class="container">
+        <h2 class="section-title">Pilihan Seafood Premium</h2>
+        <div class="product-grid" id="product-list">
+            </div>
+    </section>
+
+    <section id="about" style="padding: 4rem 20px; text-align: center;">
+        <div class="container">
+            <h2 class="section-title">Tentang SeaFresh</h2>
+            <p style="max-width: 700px; margin: 0 auto; color: #555;">
+                SeaFresh berkomitmen menyediakan seafood *cold-chain* berkualitas tinggi. Dari laut langsung ke dapur Anda.
+            </p>
+        </div>
+    </section>
+
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('product-modal')">&times;</span>
+            <img src="" alt="" class="detail-img" id="modal-img">
+            <div class="detail-info">
+                <h2 id="modal-title" style="color: var(--primary); margin-bottom: 10px;"></h2>
+                <h3 id="modal-price" style="color: var(--alert); margin-bottom: 20px;"></h3>
+                <p id="modal-desc" style="color: #666; line-height: 1.6; margin-bottom: 20px;"></p>
+                <button class="btn-add" onclick="addToCartFromModal()">
+                    <i class="fas fa-plus"></i> Tambahkan ke Keranjang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-modal" class="modal">
+        <div class="modal-content cart-modal-content">
+            <span class="modal-close" onclick="closeModal('cart-modal')">&times;</span>
+            
+            <h2 style="color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px;">Keranjang Belanja</h2>
+            
+            <div class="cart-items" id="cart-items-container">
+                </div>
+
+            <div class="cart-actions" id="cart-actions">
+                <button class="btn-clear" onclick="clearCart()">Hapus Semua</button>
+                <div class="cart-total">Total: <span id="cart-total-price">Rp 0</span></div>
+            </div>
+
+            <div id="checkout-section" class="checkout-form">
+                <h3 style="font-size: 1rem; color: var(--primary); margin-top: 10px;">Data Pengiriman</h3>
+                <div class="form-group">
+                    <input type="text" id="cust-name" class="form-input" placeholder="Nama Lengkap">
+                </div>
+                <div class="form-group">
+                    <input type="number" id="cust-wa" class="form-input" placeholder="Nomor WhatsApp (Cth: 0812...)">
+                </div>
+                <div class="form-group">
+                    <textarea id="cust-address" class="form-input" rows="2" placeholder="Alamat Lengkap Pengiriman"></textarea>
+                </div>
+                <button class="btn-checkout" onclick="checkoutToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> Checkout via WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA PRODUK ---
+        const products = [
+            { id: 1, 
+            name: "Salmon Fillet Premium",
+            price: 185000, image: "img/salmon.webp",
+            desc: "Fillet Salmon Atlantik grade A, bebas tulang dan kulit, siap masak. Dibekukan cepat dalam 2 jam setelah panen untuk memastikan kesegaran maksimal. Kaya akan Omega-3 dan protein tinggi." },
+            { id: 2,
+              name: "Ikan Dori Premium",
+              price: 45000,
+              image: "img/ikan dori.jfif",
+              desc: "Ikan Dori Premium, bebas tulang dan kulit, siap masak. Dibekukan cepat dalam 2 jam setelah panen untuk memastikan kesegaran maksimal. Kaya akan Omega-3 dan protein tinggi." },
+            { id: 3,
+              name: "Cumi Ring Beku",
+              price: 65000,
+              image: "img/cumi ring.jfif",
+              desc: "Cumi Ring dengan kualitas Premium, siap masak. Dibekukan cepat dalam 2 jam setelah panen untuk memastikan kesegaran maksimal. Kaya akan Omega-3 dan protein tinggi." },
+            { id: 4,
+              name: "Kepiting Soka",
+              price: 120000,
+              image: "img/kepiting-soka.webp",
+              desc: "Soft Shell Crab, bisa dimakan seluruh bagian.Perpaduan sempurna antara rasa manis, asin, dan sedikit aroma laut yang segar" },
+            { id: 5,
+              name: "Kerang Hijau",
+              price: 35000,
+              image: "img/kerang hijau.jfif",
+              desc: "Segar, daging tebal, sudah bersih.Kaya akan protein, omega-3, vitamin, dan mineral penting seperti zat besi, kalsium, dan selenium. " },
+            { id: 6,
+              name: "Scallop USA",
+              price: 210000,
+              image: "img/Hokkaido-Scallop.jpg",
+              desc: "Ukuran jumbo, manis dan juicy.kualitas Premium dan siap masak. Dibekukan cepat dalam 2 jam. Metode pembekuan dengan Individual Quick Freezing (IQF), di mana scallop dibekukan satu per satu untuk mencegah penggumpalan" },
+            { id: 7,
+              name: "Octopus (Gurita)",
+              price: 95000,
+              image: "img/octopus.jfif",
+              desc: "Octopus dengan kualitas Premium dan siap masak. Kaya akan protein, omega-3, vitamin, dan mineral penting seperti zat besi, kalsium, dan selenium." },
+            ]
+
+        let cart = [];
+        let currentDetailId = null;
+        // NOMOR WA ADMIN (GANTI DISINI)
+        const ADMIN_WA = "6281234567890"; 
+
+        const formatRupiah = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+
+        // --- RENDER PRODUK ---
+        const productList = document.getElementById('product-list');
+        productList.innerHTML = products.map(p => `
+            <div class="product-card" onclick="openDetail(${p.id})">
+                <img src="${p.image}" alt="${p.name}" class="product-img">
+                <div class="product-info">
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-price">${formatRupiah(p.price)}</div>
+                    <button class="btn-add" onclick="event.stopPropagation(); addToCart(${p.id})">
+                        <i class="fas fa-cart-plus"></i> Beli
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        // --- CART LOGIC ---
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existing = cart.find(item => item.id === id);
+            if (existing) existing.qty++;
+            else cart.push({ ...product, qty: 1 });
+            
+            updateCartUI();
+            showToast(); // Panggil notifikasi
+        }
+
+        function addToCartFromModal() {
+            if(currentDetailId) {
+                addToCart(currentDetailId);
+                closeModal('product-modal');
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+        }
+
+        function clearCart() {
+            if(confirm("Apakah Anda yakin ingin menghapus semua isi keranjang?")) {
+                cart = [];
+                updateCartUI();
+            }
+        }
+
+        // --- TOAST FUNCTION ---
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.reduce((acc, item) => acc + item.qty, 0);
+            
+            const container = document.getElementById('cart-items-container');
+            const checkoutSection = document.getElementById('checkout-section');
+            const cartActions = document.getElementById('cart-actions');
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; margin: 20px 0;">Keranjang kosong.</p>';
+                document.getElementById('cart-total-price').innerText = formatRupiah(0);
+                checkoutSection.style.display = 'none'; // Sembunyikan form jika kosong
+                cartActions.style.display = 'none';
+                return;
+            }
+
+            checkoutSection.style.display = 'flex';
+            cartActions.style.display = 'flex';
+
+            let total = 0;
+            container.innerHTML = cart.map(item => {
+                total += item.price * item.qty;
+                return `
+                    <div class="cart-item">
+                        <div style="display:flex; align-items:center;">
+                            <img src="${item.image}" alt="${item.name}">
+                            <div class="cart-item-details">
+                                <div style="font-weight:600; font-size:0.9rem;">${item.name}</div>
+                                <div style="font-size:0.8rem; color:#666;">${item.qty} x ${formatRupiah(item.price)}</div>
+                            </div>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('cart-total-price').innerText = formatRupiah(total);
+        }
+
+        // --- CHECKOUT LOGIC ---
+        function checkoutToWhatsApp() {
+            const name = document.getElementById('cust-name').value;
+            const wa = document.getElementById('cust-wa').value;
+            const address = document.getElementById('cust-address').value;
+
+            if(!name || !wa || !address) {
+                alert("Mohon lengkapi Nama, Nomor WA, dan Alamat sebelum checkout.");
+                return;
+            }
+
+            let message = `Halo SeaFresh, saya ingin memesan:\n\n`;
+            let total = 0;
+            
+            cart.forEach(item => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                message += `- ${item.name} (${item.qty}x) : ${formatRupiah(subtotal)}\n`;
+            });
+
+            message += `\n*Total Pesanan: ${formatRupiah(total)}*\n\n`;
+            message += `Data Pengiriman:\nNama: ${name}\nWA: ${wa}\nAlamat: ${address}`;
+
+            const url = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        }
+
+        // --- MODAL & HELPERS ---
+        function openDetail(id) {
+            const p = products.find(i => i.id === id);
+            currentDetailId = id;
+            document.getElementById('modal-img').src = p.image;
+            document.getElementById('modal-title').innerText = p.name;
+            document.getElementById('modal-price').innerText = formatRupiah(p.price);
+            document.getElementById('modal-desc').innerText = p.desc;
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        function toggleCart() {
+            const m = document.getElementById('cart-modal');
+            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+            updateCartUI(); // Pastikan UI update saat buka
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        window.onclick = function(e) { if(e.target.classList.contains('modal')) e.target.style.display = "none"; }
+    </script>
+</body>
+</html>
