@@ -1,0 +1,233 @@
+<!-- Admin Login & Dashboard System (Standalone Component) -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SeaFresh Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-container {
+            max-width: 350px;
+            margin: 80px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #0f4c75;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #0f4c75;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #3282b8;
+        }
+
+        .dashboard {
+            display: none;
+            padding: 20px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.8rem;
+        }
+        .pending { background: #ff9800; }
+        .processing { background: #2196f3; }
+        .done { background: #4caf50; }
+
+    </style>
+</head>
+<body>
+
+<div class="login-container" id="login-box">
+    <h2>Admin Login</h2>
+    <input type="text" id="admin-user" placeholder="Username" />
+    <input type="password" id="admin-pass" placeholder="Password" />
+    <button onclick="loginAdmin()">LOGIN</button>
+</div>
+
+<div class="dashboard" id="dashboard">
+    <h2>Dashboard Admin SeaFresh</h2>
+
+    <div class="card">
+        <h3>Jumlah Pesanan Masuk</h3>
+        <p id="order-count">0 Pesanan</p>
+    </div>
+
+    <div class="card">
+        <h3>Stok Produk</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produk</th>
+                    <th>Stok</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="stock-table"></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Status Pesanan</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Pesanan</th>
+                <th>Status</th>
+                <th>Update</th>
+            </tr>
+            </thead>
+            <tbody id="order-table"></tbody>
+        </table>
+    </div>
+
+    <button style="background:#ff5252; margin-top:20px;" onclick="logoutAdmin()">Logout</button>
+</div>
+
+<script>
+    // Simulasi akun admin
+    const ADMIN_USERNAME = "admin";
+    const ADMIN_PASSWORD = "seafresh123";
+
+    // Dummy data stok produk
+    let stockData = [
+        { id: 1, name: "Salmon Fillet Premium", stock: 25 },
+        { id: 2, name: "Ikan Dori Premium", stock: 40 },
+        { id: 3, name: "Cumi Ring Beku", stock: 32 },
+        { id: 4, name: "Kepiting Soka", stock: 18 },
+        { id: 4, name: "Kerang Hijau", stock: 18 },
+        { id: 4, name: "Scallop USA", stock: 18 },
+        { id: 4, name: "Octopus", stock: 18 },
+        
+    ];
+
+    // Dummy pesanan
+    let incomingOrders = [
+        { id: 1, customer: "Rina", product: "Salmon 2x", status: "pending" },
+        { id: 2, customer: "Andi", product: "Cumi 1x", status: "processing" },
+    ];
+
+    function loginAdmin() {
+        const u = document.getElementById("admin-user").value;
+        const p = document.getElementById("admin-pass").value;
+
+        if (u === ADMIN_USERNAME && p === ADMIN_PASSWORD) {
+            document.getElementById("login-box").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+            loadDashboard();
+        } else {
+            alert("Username atau password salah!");
+        }
+    }
+
+    function logoutAdmin() {
+        document.getElementById("dashboard").style.display = "none";
+        document.getElementById("login-box").style.display = "block";
+    }
+
+    function loadDashboard() {
+        // Update jumlah pesanan
+        document.getElementById("order-count").innerText = incomingOrders.length + " Pesanan";
+
+        // Render tabel stok
+        const stockTable = document.getElementById("stock-table");
+        stockTable.innerHTML = stockData.map(item => `
+            <tr>
+                <td>${item.name}</td>
+                <td><input type="number" value="${item.stock}" min="0" onchange="updateStock(${item.id}, this.value)"></td>
+                <td><button onclick="saveStock(${item.id})">Simpan</button></td>
+            </tr>
+        `).join("");
+
+        // Render tabel pesanan
+        const orderTable = document.getElementById("order-table");
+        orderTable.innerHTML = incomingOrders.map(order => `
+            <tr>
+                <td>${order.customer}</td>
+                <td>${order.product}</td>
+                <td><span class="status ${order.status}">${order.status}</span></td>
+                <td>
+                    <select onchange="updateOrderStatus(${order.id}, this.value)">
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="done">Done</option>
+                    </select>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    function updateStock(id, value) {
+        const product = stockData.find(p => p.id === id);
+        product.stock = parseInt(value);
+    }
+
+    function saveStock(id) {
+        alert("Stok produk berhasil diperbarui!");
+    }
+
+    function updateOrderStatus(id, newStatus) {
+        const order = incomingOrders.find(o => o.id === id);
+        order.status = newStatus;
+        loadDashboard();
+    }
+</script>
+
+</body>
+</html>
